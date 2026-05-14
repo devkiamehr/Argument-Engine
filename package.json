@@ -1,13 +1,18 @@
 {
   "name": "argument-engine",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "A TypeScript engine and REST API for parsing and validating categorical syllogisms.",
   "scripts": {
     "test": "vitest",
-    "start": "nodemon --exec \"node --loader ts-node/esm\" server.ts"
+    "start": "nodemon --exec \"node --loader ts-node/esm\" src/server.ts"
   },
-  "keywords": [],
+  "keywords": [
+    "logic",
+    "syllogism",
+    "aristotelian-logic",
+    "typescript",
+    "express"
+  ],
   "author": "",
   "license": "ISC",
   "type": "module",

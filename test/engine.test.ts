@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { engine } from "./engine.js";
+import { engine } from "../src/engine.js";
 
 describe("engine", () => {
     it("handles basic AA-1 syllogism", () => {

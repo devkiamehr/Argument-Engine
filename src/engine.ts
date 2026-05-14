@@ -96,7 +96,7 @@ const cleanWord = (word: string): string => {
 
 const normalizeComparisonWord = (word: string): string => {
     const cleaned = cleanWord(word).replace(/men$/, "man");
-    if (/[td]es$/.test(cleaned)) return cleaned; // preserve Greek/Latin proper nouns (Socrates, Thucydides, etc.)
+    if (/[td]es$/.test(cleaned)) return cleaned;
     return inflector.singularize(cleaned);
 }
 
@@ -127,8 +127,6 @@ export const engine = (data: lines) => {
 
     const premiseOneCheck = tokenizeTerm(lineOne);
     const premiseTwoCheck = tokenizeTerm(lineTwo);
-    //note to self: put premiseOneCheck and premiseTwoCheck in an array and run a for loop
-    //for the array to run the code below?
     let premiseOne: proposition;
     let premiseTwo: proposition;
     try {
@@ -180,7 +178,6 @@ const parser = (premise: string[]): proposition => {
         throw new Error("Invalid sentence: premise must be at least 3 words.");
     }
 
-    //cleaner
     premise = premise.filter(word => !IGNORE.has(word));
     const quantifierCount = premise.filter(word => quantityPattern.includes(word)).length;
 
@@ -192,9 +189,7 @@ const parser = (premise: string[]): proposition => {
         quantity = "singular";
     }
 
-    //assigning
     for (let i = 0; i < premise.length; i++) {
-        //assigning quantity
         if (quantityPattern.includes(premise[i]!)) {
             const cleaned = quantityPatternKey[premise[i]!];
             if (!cleaned) {
@@ -204,13 +199,11 @@ const parser = (premise: string[]): proposition => {
             continue;
         }
         
-        //assigning subject
         if (quantity !== undefined && subject === undefined) {
             subject = premise[i];
             continue;
         }
 
-        //assigning quality
         if (quantity !== undefined && subject !== undefined && quality === undefined) {
             if (qualityPattern.includes(premise[i]!)) {
                 if (singleDissentingKey.includes(premise[i]!)) {
@@ -232,7 +225,6 @@ const parser = (premise: string[]): proposition => {
             }
         }
 
-        //assigning predicate
         if (quantity !== undefined && subject !== undefined && quality !== undefined) {
             if (predicate !== undefined) {
                 predicate += ` ${premise[i]}`;
@@ -249,12 +241,6 @@ const parser = (premise: string[]): proposition => {
     const propTypeKey: propositionKey = `${quantity}-${quality}`;
     proptype = propositionType[propTypeKey];
 
-        //note to self: delete OneDone, make a array variable in engine of type propostion
-        //(or some other way to hold the 2 parsed premsises in engine, then send it into a
-        //new function that figures out the middle term, suject, and predicate term for the
-        //conclusion while also making sure the premises are given the correct roles of major
-        //or minor and gives it back to the engine figure out the mood, figure, and to check
-        //with that to see if the lines is valid.
     const cleanedPropostion: proposition = {
         propType: proptype,
         quantity: quantity,
@@ -269,21 +255,6 @@ const syllogism = (
     premiseOne: proposition,
     premiseTwo: proposition
 ): { mood: mood; subject: string; predicate: string, singular: boolean } => {
-    //In this func, find the middleterm first by seeing which word matches in both premises,
-    //store the middleterm in a const, then store the premise one and two outer terms in
-    //different consts, then based off that, figure out the order of the subject or predicate
-    //and middle term in each premise and make a new const of a new type, term order that
-    //looks like "p-m", "m-s", etc., and than the easy part, put the two new consts of type
-    //termOrder in different orders of each other in a new const and send it off to a new
-    //key search of figures to see which kind it is, than from there hold the value of the
-    //figure in a new const with the key from the two termOrders sent(possible a another new type
-    //to hold two termOrders for one syllogism possibility) and then make a new string by putting
-    //together the proptypes of both premises and the recently discovered figure number into an
-    //order like "AA-1", then send it off to a new list of valid combinations. There should be two
-    //paths that both of which find the figure for the different order of syllogism and whichever one
-    //is valid first or at all determines the correct major and minor premises which won't need to be
-    //thought of since the syllogism would already be confirmed as valid or not. But it will matter to
-    //send the correct outer terms to be the subject and predicate terms of the conclusion.
     const p1Terms: [string, string] = [
         premiseOne.subject,
         premiseOne.predicate
