@@ -26,5 +26,11 @@ type proposition = {
 type termOrder = "m-p" | "p-m" | "m-s" | "s-m";
 type figureOrder = "m-p,s-m" | "p-m,s-m" | "m-p,m-s" | "p-m,m-s";
 type mood = `${propType}${propType}-${figure}`;
+type syllogismResolution = {
+    mood: mood;
+    subject: string;
+    predicate: string;
+    singular: boolean;
+}
 
-export type {proposition, lines, propType, propositionKey, quantity, quality, role, termOrder, figureOrder, figure, mood, qualityText, qualityTextTypes };
+export type {proposition, lines, propType, propositionKey, quantity, quality, role, termOrder, figureOrder, figure, mood, qualityText, qualityTextTypes, syllogismResolution };
