@@ -2,7 +2,7 @@ import type { lines, proposition, quantity, syllogismResolution } from "./types.
 import { conclusionTypeByMood, qualityTextByState } from "./engine/constants.js";
 import { parsePremise } from "./engine/parse-premise.js";
 import { resolveSyllogism } from "./engine/resolve-syllogism.js";
-import { tokenizePremise } from "./engine/text.js";
+import { tokenizePremise } from "./engine/normalize-text.js";
 
 export const engine = (data: lines) => {
     const { lineOne, lineTwo } = data;

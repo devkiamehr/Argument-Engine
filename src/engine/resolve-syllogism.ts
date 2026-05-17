@@ -1,6 +1,6 @@
 import type { figure, mood, proposition, syllogismResolution, termOrder } from "../types.js";
 import { figureByOrder, validMoods } from "./constants.js";
-import { normalizeComparisonTerm, singularizeTermForOutput } from "./text.js";
+import { normalizeComparisonTerm, singularizeTermForOutput } from "./normalize-text.js";
 
 export const resolveSyllogism = (
     premiseOne: proposition,

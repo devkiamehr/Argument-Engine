@@ -12,18 +12,20 @@ Argument Engine is a TypeScript/Node.js REST API for parsing and validating **ca
 
 ```bash
 npm start        # Run dev server via nodemon (port 4000 by default)
+npm test -- --run
 ```
-
-No test runner is configured yet.
 
 ## Architecture
 
 The project has two parallel engine implementations:
 
-- **`engine.ts`** — Takes raw string input (`syllogism` with `lineOne`/`lineTwo`), tokenizes and parses the text, then classifies each premise. Uses types from `types.ts`.
-- **`beta-one.ts`** — A rearchitected version that takes pre-structured `cannon` objects instead of raw strings. Adds `figure` (1–4) to the syllogism and uses `polarity: boolean` instead of `quality: string`. Types are self-contained in the file.
-- **`server.ts`** — Express 5 server exposing an `/api` endpoint. Currently a stub; engine logic is not yet wired to routes.
-- **`types.ts`** — Shared types used only by `engine.ts`.
+- **`src/engine.ts`** — Orchestrates the active raw-string engine.
+- **`src/engine/normalize-text.ts`** — Tokenization and term-normalization helpers for the active engine.
+- **`src/engine/parse-premise.ts`** — Premise parsing logic for the active engine.
+- **`src/engine/resolve-syllogism.ts`** — Mood/figure resolution and conclusion-term selection.
+- **`src/server.ts`** — Express 5 server exposing the `/syllogism` endpoint.
+- **`src/types.ts`** — Shared types used by the active engine.
+- **`archive/beta-one.ts`** — Archived structured-input experiment using `cannon` objects and figure-aware syllogisms.
 
 The two engines are **not yet reconciled** — `beta-one.ts` appears to be the intended direction (more structured input, figure-aware), while `engine.ts` is the string-parsing prototype.
 

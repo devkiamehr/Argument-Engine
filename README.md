@@ -16,7 +16,10 @@ Argument Engine is a TypeScript/Node.js project for parsing and validating categ
 | --- | --- |
 | `src/engine.ts` | Active syllogism parser and inference engine |
 | `src/types.ts` | Shared types for the active engine |
-| `src/server.ts` | Express server exposing the `/api` endpoint |
+| `src/server.ts` | Express server exposing the `/syllogism` endpoint |
+| `src/engine/normalize-text.ts` | Tokenization and normalization helpers |
+| `src/engine/parse-premise.ts` | Premise parsing helpers |
+| `src/engine/resolve-syllogism.ts` | Mood, figure, and conclusion-resolution helpers |
 | `test/engine.test.ts` | Vitest coverage for the active engine |
 | `archive/beta-one.ts` | Archived experimental structured-input engine |
 
@@ -41,7 +44,7 @@ The server listens on `http://localhost:4000` by default.
 
 ## API
 
-### `POST /api`
+### `POST /syllogism`
 
 Send JSON with two premises:
 
@@ -59,6 +62,20 @@ Successful responses return:
   "conclusion": "socrates is mortal"
 }
 ```
+
+Invalid requests return a JSON error response:
+
+```json
+{
+  "error": "Invalid syllogism: no middle term detected."
+}
+```
+
+## Architecture
+
+Pipeline:
+
+`raw input -> tokenization -> normalization -> parsing -> mood/figure analysis -> conclusion generation`
 
 ## Run tests
 
