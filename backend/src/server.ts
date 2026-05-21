@@ -3,6 +3,21 @@ import { engine } from "./engine.js";
 
 const app = express();
 const PORT = process.env.PORT || 4000;
+const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || "http://localhost:3000";
+
+app.use((req, res, next) => {
+    res.header("Access-Control-Allow-Origin", FRONTEND_ORIGIN);
+    res.header("Vary", "Origin");
+    res.header("Access-Control-Allow-Methods", "POST, OPTIONS");
+    res.header("Access-Control-Allow-Headers", "Content-Type");
+
+    if (req.method === "OPTIONS") {
+        res.sendStatus(204);
+        return;
+    }
+
+    next();
+});
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));

@@ -1,7 +1,7 @@
 {
-  "name": "argument-engine",
+  "name": "inferex-backend",
   "version": "1.0.0",
-  "description": "A TypeScript engine and REST API for parsing and validating categorical syllogisms.",
+  "description": "The Inferex TypeScript engine and REST API for parsing and validating categorical syllogisms.",
   "scripts": {
     "test": "vitest",
     "start": "nodemon --exec \"node --loader ts-node/esm\" src/server.ts"
