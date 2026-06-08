@@ -1,6 +1,21 @@
+import jwt from 'jsonwebtoken';
 import { createUser, getUserByEmail, editUser, deleteUser, getUserById } from "../models/userModel.js";
 import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
+
+const COOKIE_OPTS = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax' as const,
+    path: '/',
+}
+
+const MAX_AGE = 7 * 24 * 60 * 60 * 1000;
+
+const signAndSend = (res: Response, userId: string) => {
+    const token = jwt.sign({ userId }, process.env.JWT_SECRET!, { expiresIn: '7d' });
+    res.cookie('token', token, { ...COOKIE_OPTS, maxAge: MAX_AGE });
+}
 
 export const register = async (req: Request, res: Response) => {
     try {
@@ -14,6 +29,7 @@ export const register = async (req: Request, res: Response) => {
 
         const passwordHash = await bcrypt.hash(password, 12);
         const user = await createUser({ email, name, passwordHash });
+        signAndSend(res, user.id);
         return res.status(201).json({ message: 'Account created.', user: { ...user, password, passwordHash: undefined } });
     } catch {
         res.status(500).json({ error: 'Internal server error.' });
@@ -33,18 +49,22 @@ export const login = async (req: Request, res: Response) => {
         const valid = await bcrypt.compare(password, user.passwordHash);
         if (!valid) return res.status(401).json({ error: 'Password incorrect.' });
 
-        res.status(200).json({ message: 'Logged in.', user: { ...user, password, passwordHash: undefined } });
+        signAndSend(res, user.id);
+        return res.status(200).json({ message: 'Logged in.', user: { ...user, password, passwordHash: undefined } });
     } catch {
         res.status(500).json({ error: 'Internal server error.' });
     }
 }
 
+export const logout = (_req: Request, res: Response) => {
+    res.clearCookie('token', COOKIE_OPTS);
+    return res.status(200).json({ message: 'Logged out.' });
+}
+
 export const editAccount = async (req: Request, res: Response) => {
     try {
-        const { id, email, name, password } = req.body;
-        if (!id) {
-            return res.status(500).json({ error: 'Private account ID not received.' });
-        }
+        const id = req.userId!;
+        const { email, name, password } = req.body;
 
         const user = await getUserById(id);
         if (!user) return res.status(404).json({ error: 'Account not found.' });
@@ -62,18 +82,20 @@ export const editAccount = async (req: Request, res: Response) => {
 
 export const deleteAccount = async (req: Request, res: Response) => {
     try {
-        const { email, password } = req.body;
-        if (!email || !password) {
-            return res.status(400).json({ error: 'Email and password are required.' });
+        const id = req.userId!;
+        const { password } = req.body;
+        if (!password) {
+            return res.status(400).json({ error: 'Password is required to delete account.' });
         }
 
-        const user = await getUserByEmail(email);
+        const user = await getUserById(id);
         if (!user) return res.status(404).json({ error: 'Account not found.' });
 
         const passValid = await bcrypt.compare(password, user.passwordHash);
-        if (!passValid) return res.status(401).json({ error: 'Password incorrect.' });
+        if (!passValid) return res.status(401).json({ error: 'Password is incorrect.' });
 
-        await deleteUser(email);
+        res.clearCookie('token', COOKIE_OPTS);
+        await deleteUser(id);
         res.status(200).json({ message: 'Account deleted.' });
     } catch {
         res.status(500).json({ error: 'Internal server error.' });
