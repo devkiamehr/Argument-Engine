@@ -3,9 +3,9 @@
 import { useCallback, useState } from "react";
 
 import {
-  postSyllogism,
+  createSyllogism,
+  type Syllogism,
   type SyllogismPayload,
-  type SyllogismResponse,
 } from "@/lib/api";
 
 type Status = "idle" | "loading" | "success" | "error";
@@ -14,27 +14,28 @@ type UseSyllogism = {
   status: Status;
   loading: boolean;
   error: string | null;
-  result: SyllogismResponse | null;
+  result: Syllogism | null;
   analyze: (payload: SyllogismPayload) => Promise<void>;
   reset: () => void;
 };
 
 /**
- * Wraps the single `POST /syllogism` call with loading / error / result state.
- * This is the one place the Analyzer talks to the backend.
+ * Wraps `POST /syllogism` with loading / error / result state. On success the
+ * backend has both analyzed and persisted the syllogism to the user's history,
+ * returning the saved record.
  */
 export function useSyllogism(): UseSyllogism {
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<SyllogismResponse | null>(null);
+  const [result, setResult] = useState<Syllogism | null>(null);
 
   const analyze = useCallback(async (payload: SyllogismPayload) => {
     setStatus("loading");
     setError(null);
 
     try {
-      const response = await postSyllogism(payload);
-      setResult(response);
+      const syllogism = await createSyllogism(payload);
+      setResult(syllogism);
       setStatus("success");
     } catch (err) {
       setResult(null);

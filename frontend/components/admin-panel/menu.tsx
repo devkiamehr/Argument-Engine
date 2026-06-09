@@ -1,11 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { Ellipsis, LogIn } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { Ellipsis, LogIn, LogOut } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
 
 import { cn } from "@/lib/utils";
 import { getMenuList } from "@/lib/menu-list";
+import { useAuth } from "@/components/providers/auth-provider";
 import { Button } from "@/components/ui/button";
 import { CollapseMenuButton } from "@/components/admin-panel/collapse-menu-button";
 import {
@@ -21,7 +22,31 @@ interface MenuProps {
 
 export function Menu({ isOpen }: MenuProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const menuList = getMenuList(pathname);
+  const { user, logout } = useAuth();
+
+  async function handleLogout() {
+    await logout();
+    router.push("/login");
+  }
+
+  const signLabel = user ? "Sign out" : "Sign in";
+  const SignIcon = user ? LogOut : LogIn;
+  const signButton = user ? (
+    <Button
+      variant="outline"
+      className="w-full justify-center h-10 mt-5"
+      onClick={handleLogout}
+    />
+  ) : (
+    <Button
+      variant="outline"
+      className="w-full justify-center h-10 mt-5"
+      render={<Link href="/login" />}
+      nativeButton={false}
+    />
+  );
 
   return (
     <nav className="mt-8 flex w-full min-h-0 flex-1 flex-col">
@@ -103,18 +128,18 @@ export function Menu({ isOpen }: MenuProps) {
           <li className="w-full grow flex items-end">
             <TooltipProvider disableHoverableContent>
               <Tooltip delayDuration={100}>
-                <TooltipTrigger render={<Button variant="outline" className="w-full justify-center h-10 mt-5" render={<Link href="/login" />} nativeButton={false} />}><span className={cn(isOpen === false ? "" : "mr-4")}>
-                                                    <LogIn size={18} />
+                <TooltipTrigger render={signButton}><span className={cn(isOpen === false ? "" : "mr-4")}>
+                                                    <SignIcon size={18} />
                                                   </span><p
                                                     className={cn(
                                                       "whitespace-nowrap",
                                                       isOpen === false ? "opacity-0 hidden" : "opacity-100"
                                                     )}
                                                   >
-                                                    Sign in
+                                                    {signLabel}
                                                   </p></TooltipTrigger>
                 {isOpen === false && (
-                  <TooltipContent side="right">Sign in</TooltipContent>
+                  <TooltipContent side="right">{signLabel}</TooltipContent>
                 )}
               </Tooltip>
             </TooltipProvider>

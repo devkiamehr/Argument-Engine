@@ -1,17 +1,18 @@
 "use client";
 
-import { AlertTriangle } from "lucide-react";
+import Link from "next/link";
+import { AlertTriangle, Check } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { BetaField } from "@/components/features/beta-field";
-import type { SyllogismResponse } from "@/lib/api";
+import type { Syllogism } from "@/lib/api";
 import { cn } from "@/lib/utils";
 
 type Status = "idle" | "loading" | "success" | "error";
 
 type ResultPanelProps = {
   status: Status;
-  result: SyllogismResponse | null;
+  result: Syllogism | null;
   error: string | null;
 };
 
@@ -77,14 +78,26 @@ export function ResultPanel({ status, result, error }: ResultPanelProps) {
           )}
 
           {status === "success" && result && (
-            <p className="mt-3 flex items-start gap-3 font-display text-3xl leading-snug font-medium text-foreground sm:text-4xl">
-              <span aria-hidden className="text-primary">
-                ∴
-              </span>
-              <span className="min-w-0 break-words">
-                {capitalize(result.conclusion)}
-              </span>
-            </p>
+            <>
+              <p className="mt-3 flex items-start gap-3 font-display text-3xl leading-snug font-medium text-foreground sm:text-4xl">
+                <span aria-hidden className="text-primary">
+                  ∴
+                </span>
+                <span className="min-w-0 break-words">
+                  {capitalize(result.conclusion)}
+                </span>
+              </p>
+              <p className="mt-4 inline-flex items-center gap-1.5 font-mono text-xs text-muted-foreground">
+                <Check className="size-3.5 text-valid" />
+                Saved to your{" "}
+                <Link
+                  href="/history"
+                  className="font-medium text-foreground underline underline-offset-4"
+                >
+                  history
+                </Link>
+              </p>
+            </>
           )}
         </div>
 
@@ -98,16 +111,13 @@ export function ResultPanel({ status, result, error }: ResultPanelProps) {
           <Eyebrow>Engine</Eyebrow>
           <div className="mt-1 divide-y divide-border/70">
             <BetaField label="Mood" value={result?.mood} />
-            <BetaField
-              label="Figure"
-              value={result?.figure ? String(result.figure) : undefined}
-            />
+            <BetaField label="Figure" value={result?.figure} />
             <BetaField
               label="Validity"
               value={
-                result?.valid === undefined
+                result?.validity == null
                   ? undefined
-                  : result.valid
+                  : result.validity
                     ? "valid"
                     : "invalid"
               }

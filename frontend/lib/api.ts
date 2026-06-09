@@ -1,85 +1,170 @@
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
 
+export type User = {
+    id: string;
+    email: string;
+    name: string;
+    createdAt: string;
+    updatedAt?: string;
+};
+
+// Mirrors the Prisma `Syllogism` record. mood/figure/validity exist in the DB
+// but the engine doesn't populate them yet, so they come back null (shown as
+// "beta" in the UI until the backend fills them in).
+export type Syllogism = {
+    id: string;
+    lineOne: string;
+    lineTwo: string;
+    conclusion: string;
+    mood: string | null;
+    figure: string | null;
+    validity: boolean | null;
+    createdAt: string;
+    updatedAt: string;
+    userId: string;
+};
+
 export type SyllogismPayload = {
     lineOne: string;
     lineTwo: string;
 };
 
-export type Figure = 1 | 2 | 3 | 4;
+export class ApiError extends Error {
+    status: number;
+    constructor(message: string, status: number) {
+        super(message);
+        this.name = "ApiError";
+        this.status = status;
+    }
+}
 
-/*
- * The backend currently returns only `conclusion`. The engine also computes
- * mood / figure / validity internally, but `POST /syllogism` does not expose
- * them yet. They are typed here as optional so that:
- *   1. the result panel can show them as "beta" placeholders today, and
- *   2. wiring them live later is a single-spot change (just have the backend
- *      include them and they flow straight through `postSyllogism`).
- */
-export type SyllogismResponse = {
-    conclusion: string;
-    mood?: string; // e.g. "AA-1"
-    figure?: Figure;
-    valid?: boolean;
-    subject?: string;
-    predicate?: string;
-    singular?: boolean;
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+    typeof value === "object" && value !== null;
+
+type RequestOptions = {
+    method?: "GET" | "POST" | "PUT" | "DELETE";
+    body?: unknown;
 };
 
-/*
- * Shape of a persisted analysis for the future accounts DB. Used only to type
- * the History / Dashboard placeholder + empty states for now — nothing is
- * actually stored yet (UI shells).
- */
-export type SavedSyllogism = {
-    id: string;
-    lineOne: string;
-    lineTwo: string;
-    conclusion: string;
-    valid: boolean;
-    mood?: string;
-    figure?: Figure;
-    createdAt: string; // ISO timestamp
-};
+async function request<T>(path: string, { method = "GET", body }: RequestOptions = {}): Promise<T> {
+    let res: Response;
+    try {
+        res = await fetch(`${API_BASE_URL}${path}`, {
+            method,
+            credentials: "include",
+            headers: body !== undefined ? { "Content-Type": "application/json" } : undefined,
+            body: body !== undefined ? JSON.stringify(body) : undefined,
+        });
+    } catch {
+        // Network error / backend unreachable.
+        throw new ApiError("Could not reach the server. Is the backend running?", 0);
+    }
 
-const isRecord = (value: unknown): value is Record<string, unknown> => {
-    return typeof value === "object" && value !== null;
-};
-
-const isFigure = (value: unknown): value is Figure =>
-    value === 1 || value === 2 || value === 3 || value === 4;
-
-export const postSyllogism = async (payload: SyllogismPayload): Promise<SyllogismResponse> => {
-    const res = await fetch(`${API_BASE_URL}/syllogism`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-    })
-    const data: unknown = await res.json();
+    const text = await res.text();
+    let data: unknown = null;
+    if (text) {
+        try {
+            data = JSON.parse(text);
+        } catch {
+            data = null;
+        }
+    }
 
     if (!res.ok) {
-        const message = isRecord(data) && typeof data.error === "string"
-            ? data.error
-            : "Unexpected analysis failure.";
-
-        throw new Error(message);
+        const message =
+            isRecord(data) && typeof data.error === "string"
+                ? data.error
+                : `Request failed (${res.status}).`;
+        throw new ApiError(message, res.status);
     }
 
-    if (!isRecord(data) || typeof data.conclusion !== "string") {
-        throw new Error("Unexpected response from server.");
+    return data as T;
+}
+
+// The backend's user payloads can include extra fields (e.g. a plaintext
+// `password` echo on register/login); keep only what the UI needs.
+function pickUser(raw: unknown): User {
+    if (!isRecord(raw)) {
+        throw new ApiError("Unexpected user response from server.", 0);
     }
+    return {
+        id: String(raw.id),
+        email: String(raw.email),
+        name: String(raw.name),
+        createdAt: typeof raw.createdAt === "string" ? raw.createdAt : "",
+        updatedAt: typeof raw.updatedAt === "string" ? raw.updatedAt : undefined,
+    };
+}
 
-    // Forward-compatible: pick up the extra engine fields if/when the backend
-    // starts returning them. Today these stay undefined.
-    const result: SyllogismResponse = { conclusion: data.conclusion };
+/* ---------------------------------- auth --------------------------------- */
 
-    if (typeof data.mood === "string") result.mood = data.mood;
-    if (isFigure(data.figure)) result.figure = data.figure;
-    if (typeof data.valid === "boolean") result.valid = data.valid;
-    if (typeof data.subject === "string") result.subject = data.subject;
-    if (typeof data.predicate === "string") result.predicate = data.predicate;
-    if (typeof data.singular === "boolean") result.singular = data.singular;
+export async function register(input: {
+    email: string;
+    name: string;
+    password: string;
+}): Promise<User> {
+    const data = await request<{ user: unknown }>("/user/register", {
+        method: "POST",
+        body: input,
+    });
+    return pickUser(data.user);
+}
 
-    return result;
+export async function login(input: { email: string; password: string }): Promise<User> {
+    const data = await request<{ user: unknown }>("/user/login", {
+        method: "POST",
+        body: input,
+    });
+    return pickUser(data.user);
+}
+
+export async function logout(): Promise<void> {
+    await request("/user/logout", { method: "POST" });
+}
+
+export async function getMe(): Promise<User> {
+    const data = await request<{ user: unknown }>("/user/me");
+    return pickUser(data.user);
+}
+
+export async function updateAccount(input: {
+    email?: string;
+    name?: string;
+    password?: string;
+}): Promise<User> {
+    const data = await request<{ user: unknown }>("/user", {
+        method: "PUT",
+        body: input,
+    });
+    return pickUser(data.user);
+}
+
+export async function deleteAccount(password: string): Promise<void> {
+    await request("/user", { method: "DELETE", body: { password } });
+}
+
+/* ------------------------------- syllogisms ------------------------------ */
+
+export async function createSyllogism(payload: SyllogismPayload): Promise<Syllogism> {
+    const data = await request<{ syllogism: Syllogism }>("/syllogism", {
+        method: "POST",
+        body: payload,
+    });
+    return data.syllogism;
+}
+
+export async function listSyllogisms(): Promise<Syllogism[]> {
+    const data = await request<{ syllogisms: Syllogism[] }>("/syllogism");
+    return data.syllogisms;
+}
+
+export async function getSyllogism(id: string): Promise<Syllogism> {
+    const data = await request<{ syllogism: Syllogism }>(
+        `/syllogism/${encodeURIComponent(id)}`
+    );
+    return data.syllogism;
+}
+
+export async function deleteSyllogism(id: string): Promise<void> {
+    await request(`/syllogism/${encodeURIComponent(id)}`, { method: "DELETE" });
 }

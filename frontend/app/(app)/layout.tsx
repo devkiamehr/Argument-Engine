@@ -1,11 +1,11 @@
-import AdminPanelLayout from "@/components/admin-panel/admin-panel-layout";
+import { AppShell } from "@/components/admin-panel/app-shell";
 
-// Shell layout for the signed-in product surface (Analyzer, Dashboard,
-// History, Learn, Account). The collapsible sidebar + mobile sheet live here.
+// Signed-in product surface (Analyzer, Dashboard, History, Learn, Account).
+// AppShell shows the marketing landing instead when signed out.
 export default function AppLayout({
   children
 }: {
   children: React.ReactNode;
 }) {
-  return <AdminPanelLayout>{children}</AdminPanelLayout>;
+  return <AppShell>{children}</AppShell>;
 }

@@ -2,7 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
 
+import { useAuth } from "@/components/providers/auth-provider";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,15 +13,42 @@ import { Label } from "@/components/ui/label";
 
 type Mode = "login" | "signup";
 
-// Non-enforcing auth UI (shell). Submitting shows a preview notice — there is
-// no session or backend wired up yet.
 export function AuthForm({ mode }: { mode: Mode }) {
   const isSignup = mode === "signup";
-  const [submitted, setSubmitted] = useState(false);
+  const router = useRouter();
+  const { login, register } = useAuth();
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const canSubmit =
+    email.trim() !== "" &&
+    password !== "" &&
+    (!isSignup || name.trim() !== "") &&
+    !loading;
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setSubmitted(true);
+    if (!canSubmit) return;
+
+    setError(null);
+    setLoading(true);
+    try {
+      if (isSignup) {
+        await register({ name: name.trim(), email: email.trim(), password });
+      } else {
+        await login({ email: email.trim(), password });
+      }
+      // Keep the button in its loading state through navigation.
+      router.push("/");
+      router.refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong.");
+      setLoading(false);
+    }
   }
 
   return (
@@ -39,7 +69,13 @@ export function AuthForm({ mode }: { mode: Mode }) {
           {isSignup && (
             <div className="space-y-2">
               <Label htmlFor="name">Name</Label>
-              <Input id="name" autoComplete="name" placeholder="Your name" />
+              <Input
+                id="name"
+                autoComplete="name"
+                placeholder="Your name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
             </div>
           )}
           <div className="space-y-2">
@@ -49,6 +85,8 @@ export function AuthForm({ mode }: { mode: Mode }) {
               type="email"
               autoComplete="email"
               placeholder="you@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
           <div className="space-y-2">
@@ -58,19 +96,27 @@ export function AuthForm({ mode }: { mode: Mode }) {
               type="password"
               autoComplete={isSignup ? "new-password" : "current-password"}
               placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
 
-          {submitted && (
+          {error && (
             <p
-              role="status"
-              className="rounded-lg bg-muted px-3 py-2 font-mono text-xs text-muted-foreground"
+              role="alert"
+              className="rounded-lg bg-destructive/10 px-3 py-2 text-sm text-destructive"
             >
-              Authentication isn&apos;t available yet — this screen is a preview.
+              {error}
             </p>
           )}
 
-          <Button type="submit" size="lg" className="w-full">
+          <Button
+            type="submit"
+            size="lg"
+            className="w-full"
+            disabled={!canSubmit}
+          >
+            {loading && <Loader2 className="animate-spin" />}
             {isSignup ? "Create account" : "Sign in"}
           </Button>
         </form>

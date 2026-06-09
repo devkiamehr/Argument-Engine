@@ -29,8 +29,7 @@ export default function AuthLayout({
       <div className="w-full max-w-md">{children}</div>
 
       <p className="mt-10 max-w-md text-center font-mono text-xs text-muted-foreground">
-        Accounts are not wired up yet — these screens are a preview of the
-        sign-in experience.
+        Your premises and conclusions, saved to your account.
       </p>
     </div>
   );
