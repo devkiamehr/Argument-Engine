@@ -4,7 +4,8 @@
   "description": "The Inferex TypeScript engine and REST API for parsing and validating categorical syllogisms.",
   "scripts": {
     "test": "vitest",
-    "start": "nodemon --exec \"node --loader ts-node/esm\" src/server.ts"
+    "start": "nodemon --exec \"node --loader ts-node/esm\" src/server.ts",
+    "postinstall": "prisma generate"
   },
   "keywords": [
     "logic",

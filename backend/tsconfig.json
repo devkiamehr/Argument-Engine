@@ -40,5 +40,12 @@
     "moduleDetection": "force",
     "skipLibCheck": true,
     "moduleResolution": "nodenext"
+  },
+
+  // ts-node only compiles files as they're imported, so it would otherwise miss
+  // ambient declarations like src/types/express.d.ts (the Request.userId augmentation).
+  // "files": true eagerly loads everything tsconfig includes, matching `tsc`.
+  "ts-node": {
+    "files": true
   }
 }

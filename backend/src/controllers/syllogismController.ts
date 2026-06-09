@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { createSyllogism, findSyllogism, deleteSyllogism } from '../models/syllogismModel.js'
+import { createSyllogism, listSyllogisms, findSyllogism, deleteSyllogism } from '../models/syllogismModel.js'
 import { type lines } from "../types.js";
 import { engine } from "../engine.js";
 
@@ -21,6 +21,19 @@ export const postSyllogism = async (req: Request, res: Response) => {
         const message = error instanceof Error
             ? error.message
             : "Unexpected analysis failure.";
+        return res.status(500).json({ error: message });
+    }
+}
+
+export const listSyllogism = async (req: Request, res: Response) => {
+    try {
+        const userId = req.userId!;
+        const syllogisms = await listSyllogisms(userId);
+        return res.status(200).json({ syllogisms });
+    } catch (error) {
+        const message = error instanceof Error
+            ? error.message
+            : "Internal server error.";
         return res.status(500).json({ error: message });
     }
 }

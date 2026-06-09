@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import express from "express";
 import cookieParser from 'cookie-parser';
 import { requireAuth } from './middleware/requireAuth.js';
@@ -31,6 +32,10 @@ app.use(cookieParser());
 app.use("/user", ru);
 app.use("/syllogism", requireAuth, rs);
 
-app.listen(PORT, () => {
-    console.log(`Listening on http://localhost:${PORT}`)
-});
+if (!process.env.VERCEL) {
+    app.listen(PORT, () => {
+        console.log(`Listening on http://localhost:${PORT}`)
+    });
+}
+
+export default app;

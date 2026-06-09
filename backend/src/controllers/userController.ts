@@ -61,6 +61,18 @@ export const logout = (_req: Request, res: Response) => {
     return res.status(200).json({ message: 'Logged out.' });
 }
 
+export const me = async (req: Request, res: Response) => {
+    try {
+        const id = req.userId!;
+        const user = await getUserById(id);
+        if (!user) return res.status(404).json({ error: 'Account not found.' });
+
+        return res.status(200).json({ user: { ...user, passwordHash: undefined } });
+    } catch {
+        res.status(500).json({ error: 'Internal server error.' });
+    }
+}
+
 export const editAccount = async (req: Request, res: Response) => {
     try {
         const id = req.userId!;
