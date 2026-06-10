@@ -153,7 +153,7 @@ export function Menu({ isOpen }: MenuProps) {
                     Account
                   </p>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent side="top" sideOffset={12} align="end" className="w-60">
+                <DropdownMenuContent side="top" sideOffset={12} align="end">
                   <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
                       <p className="truncate text-sm font-medium leading-none">{user.name}</p>
