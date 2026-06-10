@@ -3,10 +3,12 @@ import { createUser, getUserByEmail, editUser, deleteUser, getUserById } from ".
 import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 
+const isProd = process.env.NODE_ENV === 'production';
+
 const COOKIE_OPTS = {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax' as const,
+    secure: isProd,
+    sameSite: (isProd ? 'none' : 'lax') as 'none' | 'lax',
     path: '/',
 }
 
