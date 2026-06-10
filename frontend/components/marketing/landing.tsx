@@ -256,7 +256,7 @@ const STEPS = [
     icon: Check,
     title: "Conclude",
     body: "It checks the mood and figure against the valid forms and returns the conclusion.",
-    sample: ["mood AA-1 · valid", "∴ socrates is mortal"],
+    sample: ["mood AAA · figure 1", "∴ socrates is mortal"],
   },
 ];
 
