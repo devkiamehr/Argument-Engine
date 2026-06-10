@@ -15,7 +15,6 @@ const badgeVariants = cva(
           "border-transparent bg-valid/12 text-valid dark:bg-valid/20",
         destructive:
           "border-transparent bg-destructive/12 text-destructive dark:bg-destructive/20",
-        beta: "border-dashed border-border bg-transparent font-mono uppercase tracking-wide text-muted-foreground",
       },
     },
     defaultVariants: {

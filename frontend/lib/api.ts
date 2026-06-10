@@ -8,9 +8,8 @@ export type User = {
     updatedAt?: string;
 };
 
-// Mirrors the Prisma `Syllogism` record. mood/figure/validity exist in the DB
-// but the engine doesn't populate them yet, so they come back null (shown as
-// "beta" in the UI until the backend fills them in).
+// Mirrors the Prisma `Syllogism` record. The engine now populates mood
+// (e.g. "AA-1") and figure (e.g. "1").
 export type Syllogism = {
     id: string;
     lineOne: string;
@@ -18,7 +17,6 @@ export type Syllogism = {
     conclusion: string;
     mood: string | null;
     figure: string | null;
-    validity: boolean | null;
     createdAt: string;
     updatedAt: string;
     userId: string;

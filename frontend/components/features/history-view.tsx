@@ -6,7 +6,6 @@ import { Loader2, Search, Trash2 } from "lucide-react";
 
 import { PageHeading } from "@/components/features/page-heading";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -26,15 +25,6 @@ function formatDate(iso: string) {
     day: "numeric",
     year: "numeric",
   }).format(new Date(iso));
-}
-
-function ValidityCell({ value }: { value: boolean | null }) {
-  if (value == null) return <Badge variant="beta">beta</Badge>;
-  return (
-    <Badge variant={value ? "valid" : "destructive"}>
-      {value ? "valid" : "invalid"}
-    </Badge>
-  );
 }
 
 export function HistoryView() {
@@ -150,7 +140,7 @@ export function HistoryView() {
                   <TableHead className="pl-6">Premises</TableHead>
                   <TableHead>Conclusion</TableHead>
                   <TableHead>Mood</TableHead>
-                  <TableHead>Validity</TableHead>
+                  <TableHead>Figure</TableHead>
                   <TableHead>Date</TableHead>
                   <TableHead className="pr-6 text-right">
                     <span className="sr-only">Actions</span>
@@ -169,15 +159,11 @@ export function HistoryView() {
                     <TableCell className="align-top font-medium">
                       {s.conclusion}
                     </TableCell>
-                    <TableCell className="align-top">
-                      {s.mood ? (
-                        <span className="font-mono text-xs">{s.mood}</span>
-                      ) : (
-                        <Badge variant="beta">beta</Badge>
-                      )}
+                    <TableCell className="align-top font-mono text-xs">
+                      {s.mood ?? "—"}
                     </TableCell>
-                    <TableCell className="align-top">
-                      <ValidityCell value={s.validity} />
+                    <TableCell className="align-top font-mono text-xs">
+                      {s.figure ?? "—"}
                     </TableCell>
                     <TableCell className="align-top font-mono text-xs text-muted-foreground">
                       {formatDate(s.createdAt)}

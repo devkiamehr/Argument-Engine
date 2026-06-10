@@ -7,7 +7,6 @@ import { ArrowRight, Clock, Loader2 } from "lucide-react";
 import { useAuth } from "@/components/providers/auth-provider";
 import { PageHeading } from "@/components/features/page-heading";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { listSyllogisms, type Syllogism } from "@/lib/api";
 
@@ -19,24 +18,16 @@ function formatDate(iso: string) {
   }).format(new Date(iso));
 }
 
-type Stat = { label: string; value: string; hint: string; beta?: boolean };
+type Stat = { label: string; value: string; hint: string };
 
 function StatCard({ stat }: { stat: Stat }) {
   return (
     <Card size="sm" className="justify-between">
       <CardContent className="space-y-2">
-        <div className="flex items-center justify-between">
-          <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
-            {stat.label}
-          </p>
-          {stat.beta && <Badge variant="beta">beta</Badge>}
-        </div>
-        <p
-          className={
-            "font-display text-4xl font-semibold tabular-nums " +
-            (stat.beta ? "text-muted-foreground/45" : "text-foreground")
-          }
-        >
+        <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
+          {stat.label}
+        </p>
+        <p className="font-display text-4xl font-semibold tabular-nums text-foreground">
           {stat.value}
         </p>
         <p className="text-xs text-muted-foreground">{stat.hint}</p>
@@ -68,19 +59,17 @@ export function DashboardView() {
   }, []);
 
   const stats = useMemo<Stat[]>(() => {
-    const hasValidity = items.some((s) => s.validity != null);
-    const moods = items.filter((s) => s.mood).map((s) => s.mood as string);
+    const moods = items.map((s) => s.mood).filter((m): m is string => !!m);
+    const figures = items.map((s) => s.figure).filter((f): f is string => !!f);
 
-    const validCount = items.filter((s) => s.validity === true).length;
-    const invalidCount = items.filter((s) => s.validity === false).length;
-
-    const topMood = moods.length
-      ? [...new Set(moods)].sort(
-          (a, b) =>
-            moods.filter((m) => m === b).length -
-            moods.filter((m) => m === a).length
-        )[0]
-      : null;
+    const mostFrequent = (arr: string[]) =>
+      arr.length
+        ? [...new Set(arr)].sort(
+            (a, b) =>
+              arr.filter((x) => x === b).length -
+              arr.filter((x) => x === a).length
+          )[0]
+        : null;
 
     return [
       {
@@ -89,22 +78,19 @@ export function DashboardView() {
         hint: "total syllogisms",
       },
       {
-        label: "Valid",
-        value: hasValidity ? String(validCount) : "—",
-        hint: "conclusions found",
-        beta: !hasValidity,
-      },
-      {
-        label: "Invalid",
-        value: hasValidity ? String(invalidCount) : "—",
-        hint: "rejected forms",
-        beta: !hasValidity,
-      },
-      {
         label: "Top mood",
-        value: topMood ?? "—",
+        value: mostFrequent(moods) ?? "—",
         hint: "most frequent",
-        beta: !topMood,
+      },
+      {
+        label: "Top figure",
+        value: mostFrequent(figures) ?? "—",
+        hint: "most frequent",
+      },
+      {
+        label: "Forms used",
+        value: String(new Set(moods).size),
+        hint: "distinct moods",
       },
     ];
   }, [items]);

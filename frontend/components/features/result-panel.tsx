@@ -4,7 +4,6 @@ import Link from "next/link";
 import { AlertTriangle, Check } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { BetaField } from "@/components/features/beta-field";
 import type { Syllogism } from "@/lib/api";
 import { cn } from "@/lib/utils";
 
@@ -25,6 +24,24 @@ function Eyebrow({ children }: { children: React.ReactNode }) {
     <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
       {children}
     </p>
+  );
+}
+
+function Readout({ label, value }: { label: string; value?: string | null }) {
+  return (
+    <div className="flex items-center justify-between gap-4 py-2.5">
+      <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground">
+        {label}
+      </span>
+      <span
+        className={cn(
+          "font-mono text-sm tabular-nums",
+          value ? "text-foreground" : "text-muted-foreground/45"
+        )}
+      >
+        {value || "—"}
+      </span>
+    </div>
   );
 }
 
@@ -101,7 +118,7 @@ export function ResultPanel({ status, result, error }: ResultPanelProps) {
           )}
         </div>
 
-        {/* Engine readouts — beta */}
+        {/* Engine readouts */}
         <div
           className={cn(
             "md:border-l md:border-border md:pl-8",
@@ -110,22 +127,9 @@ export function ResultPanel({ status, result, error }: ResultPanelProps) {
         >
           <Eyebrow>Engine</Eyebrow>
           <div className="mt-1 divide-y divide-border/70">
-            <BetaField label="Mood" value={result?.mood} />
-            <BetaField label="Figure" value={result?.figure} />
-            <BetaField
-              label="Validity"
-              value={
-                result?.validity == null
-                  ? undefined
-                  : result.validity
-                    ? "valid"
-                    : "invalid"
-              }
-            />
+            <Readout label="Mood" value={result?.mood} />
+            <Readout label="Figure" value={result?.figure} />
           </div>
-          <p className="mt-3 font-mono text-[11px] leading-relaxed text-muted-foreground/70">
-            Mood, figure &amp; validity are coming soon.
-          </p>
         </div>
       </CardContent>
     </Card>
