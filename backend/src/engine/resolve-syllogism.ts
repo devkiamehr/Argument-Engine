@@ -55,7 +55,7 @@ export const resolveSyllogism = (
 
         const predicate: string = singular ? singularizeTermForOutput(p1Terms[p1OuterIndex]!) : p1Terms[p1OuterIndex]!;
         if (validMoods.includes(probOneMood)) {
-            return { mood: probOneMood, subject: p2Terms[p2OuterIndex]!, predicate: predicate, singular: singular };
+            return { mood: probOneMood, figure: probOneFigure, subject: p2Terms[p2OuterIndex]!, predicate: predicate, singular: singular };
         }
     }
 
@@ -69,7 +69,7 @@ export const resolveSyllogism = (
 
         const predicate: string = singular ? singularizeTermForOutput(p2Terms[p2OuterIndex]!) : p2Terms[p2OuterIndex]!;
         if (validMoods.includes(probTwoMood)) {
-            return { mood: probTwoMood, subject: p1Terms[p1OuterIndex]!, predicate: predicate, singular: singular };
+            return { mood: probTwoMood, figure: probTwoFigure, subject: p1Terms[p1OuterIndex]!, predicate: predicate, singular: singular };
         }
     }
 

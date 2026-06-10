@@ -10,7 +10,8 @@ export const engine = (data: lines) => {
     const premiseTwo = parseEnginePremise(lineTwo, "Line two");
     const resolution = resolveSyllogism(premiseOne, premiseTwo);
 
-    return renderConclusion(resolution);
+    const result = renderConclusion(resolution);
+    return result;
 }
 
 const parseEnginePremise = (line: string, lineLabel: string): proposition => {
@@ -27,7 +28,7 @@ const parseEnginePremise = (line: string, lineLabel: string): proposition => {
     }
 }
 
-const renderConclusion = ({ mood, subject, predicate, singular }: syllogismResolution) => {
+const renderConclusion = ({ mood, figure, subject, predicate, singular }: syllogismResolution) => {
     const concPropType = conclusionTypeByMood[mood];
     if (!concPropType) {
         throw new Error("Something went wrong.");
@@ -39,9 +40,9 @@ const renderConclusion = ({ mood, subject, predicate, singular }: syllogismResol
 
     if (singular === true) {
         const conclusion = `${subject} ${qualityText} ${predicate}`;
-        return conclusion;
+        return { conclusion, figure, mood };
     }
 
     const conclusion = `${quantity} ${subject} ${qualityText} ${predicate}`;
-    return conclusion;
+    return { conclusion, figure, mood };
 }

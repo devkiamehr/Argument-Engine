@@ -11,9 +11,16 @@ export const postSyllogism = async (req: Request, res: Response) => {
         if (!lineOne || !lineTwo) return res.status(400).json({ error: 'Two premises must be present.' })
 
         const lines: lines = { lineOne: lineOne, lineTwo: lineTwo }
-        const conclusion = engine(lines);
+        const result = engine(lines);
 
-        const syllogism = await createSyllogism({ lineOne: lineOne, lineTwo: lineTwo, conclusion: conclusion, userId: userId })
+        const syllogism = await createSyllogism({
+            lineOne: lineOne,
+            lineTwo: lineTwo,
+            conclusion: result.conclusion,
+            mood: result.mood,
+            figure: String(result.figure),
+            userId: userId
+        });
         if (!syllogism) return res.status(500).json({ error: 'Internal server error.' });
 
         return res.status(201).json({ syllogism })

@@ -4,9 +4,8 @@ export const createSyllogism = async (data: {
     lineOne: string,
     lineTwo: string,
     conclusion: string,
-    mood?: string,
-    figure?: string,
-    validity?: boolean,
+    mood: string,
+    figure: string,
     userId: string
 }) => {
     const syllogism = await prisma.syllogism.create({ data: data });

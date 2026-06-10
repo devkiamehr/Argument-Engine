@@ -1,7 +1,7 @@
-import express from "express";
+import { Router } from "express";
 import { delSyllogism, getSyllogism, listSyllogism, postSyllogism } from "../controllers/syllogismController.js";
 
-export const rs = express.Router();
+export const rs = Router();
 
 rs.post("/", postSyllogism);
 rs.get("/", listSyllogism);

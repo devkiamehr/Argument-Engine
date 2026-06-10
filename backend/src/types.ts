@@ -28,6 +28,7 @@ type figureOrder = "m-p,s-m" | "p-m,s-m" | "m-p,m-s" | "p-m,m-s";
 type mood = `${propType}${propType}-${figure}`;
 type syllogismResolution = {
     mood: mood;
+    figure: figure;
     subject: string;
     predicate: string;
     singular: boolean;
