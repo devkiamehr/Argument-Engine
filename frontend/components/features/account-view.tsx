@@ -100,8 +100,10 @@ export function AccountView() {
   }
 
   async function handleLogout() {
+    // Navigate before clearing the session so the signed-out marketing
+    // landing doesn't flash on the route we're leaving.
+    router.replace("/login");
     await logout();
-    router.push("/login");
   }
 
   return (

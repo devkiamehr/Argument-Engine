@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import { Ellipsis, LogIn, LogOut, Settings } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
@@ -42,9 +43,16 @@ export function Menu({ isOpen }: MenuProps) {
   const menuList = getMenuList(pathname);
   const { user, logout } = useAuth();
 
+  // Prefetch the sign-in route so logout navigation commits instantly. Without
+  // this the session clears before we leave the route and the marketing
+  // landing (shown to signed-out users) flashes for a frame.
+  useEffect(() => {
+    router.prefetch("/login");
+  }, [router]);
+
   async function handleLogout() {
+    router.replace("/login");
     await logout();
-    router.push("/login");
   }
 
   return (
