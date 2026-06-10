@@ -83,19 +83,22 @@ const DEMOS = [
     p1: "All men are mortal",
     p2: "Socrates is a man",
     conclusion: "Socrates is mortal",
-    mood: "AA-1",
+    mood: "AAA",
+    figure: "1",
   },
   {
     p1: "All dogs are animals",
     p2: "All retrievers are dogs",
     conclusion: "All retrievers are animals",
-    mood: "AA-1",
+    mood: "AAA",
+    figure: "1",
   },
   {
     p1: "All philosophers are thinkers",
     p2: "Some Greeks are philosophers",
     conclusion: "Some Greeks are thinkers",
-    mood: "AI-1",
+    mood: "AII",
+    figure: "1",
   },
 ];
 
@@ -223,9 +226,8 @@ function DemoExample({
               <Badge variant="outline" className="font-mono tabular-nums">
                 {demo.mood}
               </Badge>
-              <Badge variant="valid">
-                <Check className="size-3" />
-                valid
+              <Badge variant="outline" className="font-mono tabular-nums">
+                Figure {demo.figure}
               </Badge>
             </div>
           </div>
