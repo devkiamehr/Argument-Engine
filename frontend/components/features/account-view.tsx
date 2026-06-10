@@ -6,7 +6,6 @@ import { Loader2, LogOut } from "lucide-react";
 
 import { useAuth } from "@/components/providers/auth-provider";
 import { PageHeading } from "@/components/features/page-heading";
-import { ModeToggle } from "@/components/mode-toggle";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -110,7 +109,7 @@ export function AccountView() {
       <PageHeading
         eyebrow="Settings"
         title="Account"
-        description="Manage your profile, password, and preferences."
+        description="Manage your profile, password, and account access."
       />
 
       {/* Profile */}
@@ -189,22 +188,6 @@ export function AccountView() {
               </Button>
             </div>
           </form>
-        </CardContent>
-      </Card>
-
-      {/* Appearance */}
-      <Card className="animate-rise [animation-delay:160ms]">
-        <CardContent className="space-y-5 py-6">
-          <CardLabel>Appearance</CardLabel>
-          <div className="flex items-center justify-between gap-4">
-            <div className="space-y-0.5">
-              <p className="font-medium">Theme</p>
-              <p className="text-sm text-muted-foreground">
-                Switch between light and dark. Saved locally.
-              </p>
-            </div>
-            <ModeToggle />
-          </div>
         </CardContent>
       </Card>
 

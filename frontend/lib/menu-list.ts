@@ -1,5 +1,4 @@
 import {
-  Settings,
   BookOpen,
   History,
   LayoutGrid,
@@ -66,17 +65,6 @@ export function getMenuList(pathname: string): Group[] {
           label: "Learn",
           icon: BookOpen,
           active: isActive("/learn")
-        }
-      ]
-    },
-    {
-      groupLabel: "Settings",
-      menus: [
-        {
-          href: "/account",
-          label: "Account",
-          icon: Settings,
-          active: isActive("/account")
         }
       ]
     }
