@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { LayoutGrid, LogIn, LogOut, Settings, UserPlus } from "lucide-react";
+import { LogIn, LogOut, UserPlus } from "lucide-react";
 
 import { useAuth } from "@/components/providers/auth-provider";
 import { Button } from "@/components/ui/button";
@@ -76,13 +76,6 @@ export function UserNav() {
                 </p>
               </div>
             </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem className="hover:cursor-pointer" render={<Link href="/dashboard" className="flex items-center" />}><LayoutGrid className="mr-3 h-4 w-4 text-muted-foreground" />Dashboard
-                                  </DropdownMenuItem>
-              <DropdownMenuItem className="hover:cursor-pointer" render={<Link href="/account" className="flex items-center" />}><Settings className="mr-3 h-4 w-4 text-muted-foreground" />Account
-                                  </DropdownMenuItem>
-            </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="hover:cursor-pointer" onClick={handleLogout}>
               <LogOut className="mr-3 h-4 w-4 text-muted-foreground" />
