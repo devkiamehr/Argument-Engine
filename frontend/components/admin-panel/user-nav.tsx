@@ -41,14 +41,29 @@ export function UserNav() {
 
   return (
     <DropdownMenu>
-      <TooltipProvider disableHoverableContent>
-        <Tooltip delayDuration={100}>
-          <TooltipTrigger render={<DropdownMenuTrigger render={<Button variant="outline" className="relative h-8 w-8 rounded-full" />} />}><Avatar className="h-8 w-8">
-                                                          <AvatarFallback className="bg-transparent font-mono text-sm">{user ? initials(user.name) : "∴"}</AvatarFallback>
-                                                        </Avatar></TooltipTrigger>
-          <TooltipContent side="bottom">Account</TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+      <DropdownMenuTrigger
+        render={
+          <Button
+            variant="outline"
+            size="icon-sm"
+            className="relative rounded-full"
+            aria-label="Account"
+          />
+        }
+      >
+        <TooltipProvider disableHoverableContent>
+          <Tooltip delayDuration={100}>
+            <TooltipTrigger render={<span className="flex h-8 w-8 items-center justify-center rounded-full" />}>
+              <Avatar className="h-8 w-8">
+                <AvatarFallback className="bg-transparent font-mono text-sm">
+                  {user ? initials(user.name) : "∴"}
+                </AvatarFallback>
+              </Avatar>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">Account</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </DropdownMenuTrigger>
 
       <DropdownMenuContent className="w-56" align="end" forceMount>
         {user ? (

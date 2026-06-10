@@ -27,12 +27,28 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://inferex.app"),
+  applicationName: "Inferex",
   title: {
     default: "Inferex — Syllogism Analyzer",
     template: "%s · Inferex",
   },
   description:
     "Inferex analyzes categorical syllogisms written in plain language. Enter two premises and it infers the logical conclusion.",
+  openGraph: {
+    title: "Inferex — Syllogism Analyzer",
+    description:
+      "Analyze categorical syllogisms in plain language.",
+    url: "https://inferex.app",
+    siteName: "Inferex",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Inferex — Syllogism Analyzer",
+    description:
+      "Analyze categorical syllogisms in plain language.",
+  },
 };
 
 export default function RootLayout({
