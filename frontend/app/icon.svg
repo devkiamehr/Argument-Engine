@@ -1,0 +1,7 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Inferex">
+  <rect width="32" height="32" rx="7" fill="#29304A"/>
+  <!-- ∴ "therefore" — two premises, one conclusion -->
+  <circle cx="10.8" cy="12.4" r="2.8" fill="#FAF7F0"/>
+  <circle cx="21.2" cy="12.4" r="2.8" fill="#FAF7F0"/>
+  <circle cx="16" cy="21.2" r="2.8" fill="#FAF7F0"/>
+</svg>
