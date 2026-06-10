@@ -8,7 +8,11 @@ describe("engine", () => {
             lineTwo: "socrates is man"
         });
 
-        expect(result).toBe("socrates is mortal");
+        expect(result).toEqual({
+            conclusion: "socrates is mortal",
+            mood: "AAA",
+            figure: 1
+        });
     });
 
     it("handles plural normalization", () => {
@@ -17,7 +21,7 @@ describe("engine", () => {
             lineTwo: "fido is a dog"
         });
 
-        expect(result).toBe("fido is animal");
+        expect(result.conclusion).toBe("fido is animal");
     });
 
     it("handles punctuation and capitalization", () => {
@@ -26,7 +30,7 @@ describe("engine", () => {
             lineTwo: "Socrates is man."
         });
 
-        expect(result).toBe("socrates is mortal");
+        expect(result.conclusion).toBe("socrates is mortal");
     });
 
     it("rejects repeated quantifiers", () => {
@@ -53,15 +57,25 @@ describe("engine", () => {
             lineTwo: "socrates is man"
         });
 
-        expect(result).toBe("socrates is mortal");
+        expect(result.conclusion).toBe("socrates is mortal");
     });
 
     it("does not corrupt proper names ending in es", () => {
-    const result = engine({
-        lineOne: "all men are mortal",
-        lineTwo: "socrates is man"
+        const result = engine({
+            lineOne: "all men are mortal",
+            lineTwo: "socrates is man"
+        });
+
+        expect(result.conclusion).toBe("socrates is mortal");
     });
 
-    expect(result).toBe("socrates is mortal");
-});
+    it("reports mood and figure", () => {
+        const result = engine({
+            lineOne: "all dogs are animals",
+            lineTwo: "all retrievers are dogs"
+        });
+
+        expect(result.mood).toBe("AAA");
+        expect(result.figure).toBe(1);
+    });
 });

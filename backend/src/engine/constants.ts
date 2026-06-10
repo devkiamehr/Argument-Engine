@@ -1,4 +1,4 @@
-import type { figure, figureOrder, mood, propType, propositionKey, qualityText, qualityTextTypes, quantity } from "../types.js";
+import type { figure, figureOrder, fullMood, mood, propType, propositionKey, qualityText, qualityTextTypes, quantity } from "../types.js";
 
 export const propositionTypeByKey: Record<propositionKey, propType> = {
     "all-true": "A",
@@ -69,6 +69,34 @@ export const conclusionTypeByMood: Partial<Record<mood, propositionKey>> = {
     "OA-3": "some-false"
 };
 
+export const fullMoodByPartialMood: Partial<Record<mood, fullMood>> = {
+    "AA-1": "AAA",
+    "AA-3": "AII",
+    "AA-4": "AOO",
+
+    "EA-1": "EAE",
+    "EA-2": "EAO",
+    "EA-3": "EIO",
+    "EA-4": "EEO",
+
+    "AI-1": "AII",
+    "AI-3": "AII",
+
+    "EI-1": "EIO",
+    "EI-2": "EIO",
+    "EI-3": "EIO",
+    "EI-4": "EEO",
+
+    "AE-2": "AEE",
+    "AE-4": "AEO",
+
+    "AO-2": "AOO",
+
+    "IA-3": "IAI",
+    "IA-4": "IAO",
+
+    "OA-3": "OAO"
+}
 export const qualityTextByState: Record<qualityText, qualityTextTypes> = {
     "true-true": "is",
     "true-false": "are",

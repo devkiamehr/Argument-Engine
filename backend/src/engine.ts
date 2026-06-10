@@ -1,5 +1,5 @@
 import type { lines, proposition, quantity, syllogismResolution } from "./types.js";
-import { conclusionTypeByMood, qualityTextByState } from "./engine/constants.js";
+import { conclusionTypeByMood, qualityTextByState, fullMoodByPartialMood } from "./engine/constants.js";
 import { parsePremise } from "./engine/parse-premise.js";
 import { resolveSyllogism } from "./engine/resolve-syllogism.js";
 import { tokenizePremise } from "./engine/normalize-text.js";
@@ -38,11 +38,13 @@ const renderConclusion = ({ mood, figure, subject, predicate, singular }: syllog
 
     const qualityText = qualityTextByState[`${quality}-${singular}`];
 
+    const fullMood = fullMoodByPartialMood[mood]!;
+
     if (singular === true) {
         const conclusion = `${subject} ${qualityText} ${predicate}`;
-        return { conclusion, figure, mood };
+        return { conclusion, figure, mood: fullMood };
     }
 
     const conclusion = `${quantity} ${subject} ${qualityText} ${predicate}`;
-    return { conclusion, figure, mood };
+    return { conclusion, figure, mood: fullMood };
 }
